@@ -19,38 +19,41 @@ const Register = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="p-8 max-w-md mx-auto mt-auto">
-      <input
-        type="text"
-        name="username"
-        placeholder="Username"
-        onChange={handleChange}
-        required
-        className="mb-4 w-full p-2 border"
-      />
-      <input
-        type="email"
-        name="email"
-        placeholder="Email"
-        onChange={handleChange}
-        required
-        className="mb-4 w-full p-2 border"
-      />
-      <input
-        type="password"
-        name="password"
-        placeholder="Password"
-        onChange={handleChange}
-        required
-        className="mb-4 w-full p-2 border"
-      />
-      <button
-        type="submit"
-        className="bg-blue-500 text-white px-4 py-2 rounded"
-      >
-        Register
-      </button>
-    </form>
+    <div className="p-8 max-w-md mx-auto bg-white shadow-lg rounded-lg mt-16">
+      <h1 className="text-2xl font-bold mb-6 text-center">Register</h1>
+      <form onSubmit={handleSubmit}>
+        <input
+          type="text"
+          name="username"
+          placeholder="Username"
+          onChange={handleChange}
+          required
+          className="mb-4 w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+        <input
+          type="email"
+          name="email"
+          placeholder="Email"
+          onChange={handleChange}
+          required
+          className="mb-4 w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+        <input
+          type="password"
+          name="password"
+          placeholder="Password"
+          onChange={handleChange}
+          required
+          className="mb-4 w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+        <button
+          type="submit"
+          className="bg-blue-500 text-white px-4 py-2 rounded w-full hover:bg-blue-600"
+        >
+          Register
+        </button>
+      </form>
+    </div>
   );
 };
 

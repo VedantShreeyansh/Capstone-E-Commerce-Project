@@ -1,6 +1,7 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addToCart, increaseQuantity, decreaseQuantity } from "../redux/CartSlice";
+import { Link } from "react-router-dom";
 
 const Card = ({ productObj }) => {
   const dispatch = useDispatch();
@@ -9,10 +10,11 @@ const Card = ({ productObj }) => {
   // Check if the product is already in the cart
   const productInCart = cart.find((item) => item.id === productObj.id);
 
-  const { title, category, price, thumbnail, rating } = productObj;
+  const {id, title, discountedPercentage, category, price, thumbnail, rating } = productObj;
 
   return (
     <div className="bg-white rounded-xl shadow-md overflow-hidden w-72 hover:shadow-lg transition-shadow duration-300">
+      <Link to={`/product/${id}`}>
       <figure className="w-full h-48 overflow-hidden">
         <img
           className="w-full h-full object-cover"
@@ -60,6 +62,7 @@ const Card = ({ productObj }) => {
           </div>
         )}
       </div>
+      </Link>
     </div>
   );
 };

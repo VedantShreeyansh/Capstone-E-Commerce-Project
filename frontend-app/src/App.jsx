@@ -9,12 +9,17 @@ import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import Checkout from "./components/Checkout";
 import Register from "./components/Register";
 import Profile from "./components/Profile";
+import ReactDOM from "react-dom";
+import { BrowserRouter } from "react-router-dom";
+import AuthWrapper from "../AuthWrapper";
+import ProductDetails from "./components/ProductDetails";
 
 
 const App = () => {
   return (
     <AuthProvider>
     <Router>
+    <AuthWrapper>
       <NavBar />
       <Routes>
         <Route path="/login" element={<Login />} />
@@ -22,9 +27,10 @@ const App = () => {
         <Route path="/cart" element={<ProtectedRoutes><Cart /></ProtectedRoutes>} />
         <Route path="/checkout" element={<ProtectedRoutes><Checkout /></ProtectedRoutes>} />
         <Route path="/profile" element={<ProtectedRoutes><Profile /></ProtectedRoutes>} />
+        <Route path="/product/:id" element={<ProtectedRoutes><ProductDetails /></ProtectedRoutes>} />
         <Route path="/register" element={<Register />} />
-        
     </Routes>
+    </AuthWrapper>
     </Router>
 </AuthProvider>
   );

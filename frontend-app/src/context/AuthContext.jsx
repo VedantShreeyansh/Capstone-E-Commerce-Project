@@ -1,5 +1,4 @@
-import React, { createContext, useState, useContext } from "react";
-import User from "../../../backend-app/models/User";
+import React, { createContext, useState, useContext, useEffect } from "react";
 
 const AuthContext = createContext();
 
@@ -9,21 +8,10 @@ export const AuthProvider = ({ children }) => {
   );
   const [user, setUser] = useState(() => {
     const storedUser = localStorage.getItem("user");
-    if (!storedUser || storedUser === "undefined") return null;
-    try {
-      return storedUser ? JSON.parse(storedUser) : null; // Fallback to null if no user is stored
-    } catch (error) {
-      console.error("Error parsing user from localStorage:", error);
-      return null; // Return null if parsing fails
-    }
+    return storedUser ? JSON.parse(storedUser) : null;
   });
 
   const login = (userData) => {
-    if (!userData) {
-      console.error("Invalid user data provided to login");
-      return;
-    }
-
     setIsLoggedIn(true);
     setUser(userData);
     localStorage.setItem("isAuthenticated", "true");
@@ -33,9 +21,13 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     setIsLoggedIn(false);
     setUser(null);
-    localStorage.removeItem("isAuthenticated");
-    localStorage.removeItem("user");
+    localStorage.clear();
   };
+
+  useEffect(() =>{
+    const isAuthenticated = localStorage.getItem("isAuthenticated")=== "true";
+    setIsLoggedIn(isAuthenticated);
+  })
 
   return (
     <AuthContext.Provider value={{ isLoggedIn, user, login, logout }}>
