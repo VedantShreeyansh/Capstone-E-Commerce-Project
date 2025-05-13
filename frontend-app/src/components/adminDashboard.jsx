@@ -19,7 +19,7 @@ const AdminDashboard = () => {
   }, []);
 
   const handleAddProduct = async () => {
-    e.preventDefault();
+    // e.preventDefault();
     try {
       const formData = new FormData();
       formData.append("title", newProduct.title);
