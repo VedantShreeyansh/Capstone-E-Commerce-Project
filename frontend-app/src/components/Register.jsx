@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 
 const Register = () => {
-  const [form, setForm] = useState({ username: "", email: "", password: "" });
+  const [form, setForm] = useState({ username: "", email: "", password: "", role: "" });
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -11,8 +11,10 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:5000/api/auth/register", form);
-      alert("User registered successfully");
+      const res = await axios.post("http://localhost:5000/api/auth/register", form, {
+        withCredentials: true,
+      });
+      alert(res.data.message || "User registered successfully");
     } catch (err) {
       alert(err.response?.data?.message || "Error registering");
     }
@@ -46,6 +48,17 @@ const Register = () => {
           required
           className="mb-4 w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
+        <label className="block text-gray-700 font-bold mb-2">Role:</label>
+        <select 
+         name="role"
+         value={form.role}
+         onChange={handleChange}
+         className="mb-4 w-full p-2 border rounded focus:outline-none focus:ring-2"
+         >
+          <option value="buyer">Buyer</option>
+          <option value="seller">Seller</option>
+          <option value="admin">Admin</option>
+         </select>
         <button
           type="submit"
           className="bg-blue-500 text-white px-4 py-2 rounded w-full hover:bg-blue-600"

@@ -9,11 +9,13 @@ import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import Checkout from "./components/Checkout";
 import Register from "./components/Register";
 import Profile from "./components/Profile";
+import AdminDashboard from "./components/adminDashboard";
+import BuyerDashboard from "./components/BuyerDashboard";
+import SellerDashboard from "./components/SellerDashboard";
 import ReactDOM from "react-dom";
 import { BrowserRouter } from "react-router-dom";
 import AuthWrapper from "../AuthWrapper";
 import ProductDetails from "./components/ProductDetails";
-
 
 const App = () => {
   return (
@@ -28,6 +30,9 @@ const App = () => {
         <Route path="/checkout" element={<ProtectedRoutes><Checkout /></ProtectedRoutes>} />
         <Route path="/profile" element={<ProtectedRoutes><Profile /></ProtectedRoutes>} />
         <Route path="/product/:id" element={<ProtectedRoutes><ProductDetails /></ProtectedRoutes>} />
+        <Route path="/admin/dashboard" element={<ProtectedRoutes><AdminDashboard /></ProtectedRoutes>} />
+        <Route path="/buyer/dashboard" element={<ProtectedRoutes><BuyerDashboard /></ProtectedRoutes>} />
+        <Route path="/seller/dashboard" element={<ProtectedRoutes><SellerDashboard /></ProtectedRoutes>} />
         <Route path="/register" element={<Register />} />
     </Routes>
     </AuthWrapper>

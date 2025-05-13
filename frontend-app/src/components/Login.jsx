@@ -3,6 +3,8 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
+axios.defaults.withCredentials = true;
+
 const Login = () => {
   
   const [form, setForm] = useState({ email: "", password: "" });
@@ -20,7 +22,9 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("http://localhost:5000/api/auth/login", form);
+      const res = await axios.post("http://localhost:5000/api/auth/login", form, {
+        withCredentials: true,
+      });
       if (res.data.user) {
         login(res.data.user);
         navigate("/home");

@@ -37,7 +37,6 @@ const NavBar = () => {
   }, [user]);
 
 
-
   const handleSearchChange = (e) => {
     searchQueryRef.current = e.target.value;
     navigate(`/home?search=${searchQueryRef.current}`);
@@ -71,14 +70,36 @@ const NavBar = () => {
               )}
             </Link>
           </li>
-          <ul className="flex justify-between">
+          {/* <ul className="flex justify-between">
           <li>
             <Link to="/login" className="me-10 pl-2 space-x-5 hover:text-yellow-400">Login</Link>
           </li>
           <li>
             <Link to="/register" className="me-10 space-x-2 hover:text-yellow-400">Register</Link>
           </li>
-          </ul>
+          </ul> */}
+          {/* Role-Based Links */ }
+          {user?.role === "admin" && (
+            <li>
+               <Link to="/admin/dashboard" className="hover:text-yellow-400">
+                  Admin Dashboard
+               </Link>
+            </li>
+          )}
+          {user?.role === "seller" && (
+            <li>
+                <Link to="/seller/dashboard" className="hover:text-yellow-400">
+                 Seller Dashboard
+                 </Link>
+            </li>
+          )}
+          {user?.role === "buyer" && (
+            <li>
+                 <Link to="/buyer/dashboard" className="hover:text-yellow-400">
+                  Buyer Dashboard
+                  </Link>
+            </li>
+          )}
         </ul>
         {/* Profile Icon */}
         {profilePicRef.current ? (

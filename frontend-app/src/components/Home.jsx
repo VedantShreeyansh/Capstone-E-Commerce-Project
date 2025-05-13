@@ -1,42 +1,44 @@
-import React, { useState, useEffect } from "react"; // Import useState
+import React, { useState, useEffect } from "react";
 import Card from "./Card.jsx";
 import { useLocation } from "react-router-dom";
-import products from "../../../backend-app/data/product.js";
+import axios from "axios";
 
 const Home = () => {
+  const [products, setProducts] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("All");
-  const [sortOption, setSortOption] = useState("default"); // first we define a state for implementing sorting feature
-  const [filteredProducts, setFilteredProducts] = useState(products);
+  const [sortOption, setSortOption] = useState("default");
   const location = useLocation();
 
   const searchParams = new URLSearchParams(location.search);
   const searchQuery = searchParams.get("search") || "";
 
   useEffect(() => {
-    const filtered = products[0].products.filter((product) =>
-      product.title.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-    setFilteredProducts(filtered);
-  }, [searchQuery]);
+    const fetchProducts = async () => {
+      try {
+        const res = await axios.get("http://localhost:5000/api/products/list");
+        setProducts(res.data);
+      } catch (err) {
+        console.error("Error fetching products:", err.message);
+      }
+    };
 
-  // Extract unique categories from the products array
-  const categories = [
-    "All",
-    ...new Set(products[0].products.map((product) => product.category)),
-  ];
+    fetchProducts();
+  }, []);
 
-  // Filter products based on the selected category
+  const filteredProducts = products.filter((product) =>
+    product.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const categories = ["All", ...new Set(products.map((product) => product.category))];
+
   const categoryFilteredProducts =
     selectedCategory === "All"
       ? filteredProducts
-      : filteredProducts.filter(
-          (product) => product.category === selectedCategory
-        );
+      : filteredProducts.filter((product) => product.category === selectedCategory);
 
-  // Sort products based on the selected sorting category
   const sortedProducts = [...categoryFilteredProducts].sort((a, b) => {
     if (sortOption === "priceLowToHigh") {
-      return a.price - b.price; // Sort by price ( low to high)
+      return a.price - b.price;
     } else if (sortOption === "priceHighToLow") {
       return b.price - a.price;
     } else if (sortOption === "ratingHighToLow") {
@@ -47,18 +49,14 @@ const Home = () => {
 
   return (
     <>
-      {/* Hero Section */}
       <div className="bg-gradient-to-r from-blue-500 to-purple-500 text-white p-8 rounded-lg mb-8 shadow-lg">
         <h1 className="text-4xl font-bold mb-4">Welcome to 24x7 Shop</h1>
-        <p className="text-lg">
-          Discover the best deals on your favorite products!
-        </p>
+        <p className="text-lg">Discover the best deals on your favorite products!</p>
         <button className="mt-4 bg-yellow-500 hover:bg-yellow-600 text-black px-6 py-2 rounded">
           Shop Now
         </button>
       </div>
 
-      {/* Category Filter */}
       <div className="flex justify-center mb-4">
         <select
           value={selectedCategory}
@@ -73,7 +71,6 @@ const Home = () => {
         </select>
       </div>
 
-      {/* Sorting Dropdown */}
       <div className="flex justify-center mb-4">
         <select
           value={sortOption}
@@ -87,13 +84,11 @@ const Home = () => {
         </select>
       </div>
 
-      {/* Product Grid */}
       {sortedProducts.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 px-4">
-          {sortedProducts.map((product, index) => {
-          console.log("Rendering product:", product);
-          return <Card key={index} productObj={product} />;
-        })}
+          {sortedProducts.map((product, index) => (
+            <Card key={index} productObj={product} />
+          ))}
         </div>
       ) : (
         <div className="text-center text-gray-600 mt-8">

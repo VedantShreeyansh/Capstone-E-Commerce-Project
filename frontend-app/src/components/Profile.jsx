@@ -4,18 +4,20 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const Profile = () => {
-  const { user, logout } = useAuth();
+  const { user, logout } = useAuth(); 
   const navigate = useNavigate();
   const [profile, setProfile] = useState({ email: "", username: "", profilePic: "" });
   const [newUsername, setNewUsername] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
 
+  // Redirect to login if user is not authenticated
   useEffect(() => {
     if (!user) {
       navigate("/login");
     }
   }, [user, navigate]);
 
+  // Fetch profile details
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -25,12 +27,14 @@ const Profile = () => {
         setProfile(res.data);
         setNewUsername(res.data.username);
       } catch (err) {
-        alert(err.response?.data?.message || "Error fetching profile");
+        console.error("Error fetching profile:", err.response?.data?.message || err.message);
       }
     };
-    if (user && user.email) fetchProfile();
+
+    if (user?.email) fetchProfile();
   }, [user]);
 
+  // Update username
   const handleUpdate = async () => {
     try {
       const res = await axios.patch("http://localhost:5000/api/auth/profile", {
@@ -40,14 +44,16 @@ const Profile = () => {
       alert(res.data.message);
       setProfile((prev) => ({ ...prev, username: newUsername }));
     } catch (err) {
-      alert(err.response?.data?.message || "Error updating username");
+      console.error("Error updating username:", err.response?.data?.message || err.message);
     }
   };
 
+  // Handle file selection
   const handleFileChange = (e) => {
     setSelectedFile(e.target.files[0]);
   };
 
+  // Upload profile picture
   const handleUpload = async () => {
     if (!selectedFile) {
       alert("Please select a file to upload.");
@@ -63,46 +69,57 @@ const Profile = () => {
         headers: { "Content-Type": "multipart/form-data" },
       });
       alert(res.data.message);
-      setProfile((prev) => ({ ...prev, profilePic: `http://localhost:5000${res.data.profilePic}`}));
+      setProfile((prev) => ({ ...prev, profilePic: res.data.profilePic }));
     } catch (err) {
-      alert(err.response?.data?.message || "Error uploading profile picture");
+      console.error("Error uploading profile picture:", err.response?.data?.message || err.message);
+    }
+  };
+
+  // Logout function
+  const handleLogout = async () => {
+    try {
+      await axios.post("http://localhost:5000/api/auth/logout", {}, { withCredentials: true });
+      logout(); // Clear user data from context
+      navigate("/login");
+    } catch (err) {
+      console.error("Error during logout:", err.response?.data?.message || err.message);
     }
   };
 
   return (
     <div className="p-8 max-w-md mx-auto bg-white shadow-lg rounded-lg">
       <div className="flex items-center space-x-4 mb-6">
-      <div className="relative">
-  {profile.profilePic ? (
-    <img
-      src={`http://localhost:5000${profile.profilePic}`}  // Use the full URL
-      className="w-24 h-24 bg-gray-300 rounded-full object-cover"
-    />
-  ) : (
-    <img
-      src="https://via.placeholder.com/150"
-      alt="Default Profile"
-      className="w-24 h-24 bg-gray-300 rounded-full object-cover"
-    />
-  )}
-  <label
-    htmlFor="fileInput"
-    className="absolute bottom-0 right-0 bg-blue-500 text-white p-2 rounded-full cursor-pointer"
-  >
-    +
-  </label>
-  <input
-    id="fileInput"
-    type="file"
-    onChange={handleFileChange}
-    className="hidden"
-  />
-</div>
-  <div>
-    <h1 className="text-2xl font-bold">Profile</h1>
-    <p className="text-gray-600">Manage your account details</p>
-  </div>
-</div>
+        <div className="relative">
+          {profile.profilePic ? (
+            <img
+              src={`http://localhost:5000${profile.profilePic}`} // Use the full URL
+              className="w-24 h-24 bg-gray-300 rounded-full object-cover"
+              alt="Profile"
+            />
+          ) : (
+            <img
+              src="https://via.placeholder.com/150"
+              className="w-24 h-24 bg-gray-300 rounded-full object-cover"
+            />
+          )}
+          <label
+            htmlFor="fileInput"
+            className="absolute bottom-0 right-0 bg-blue-500 text-white p-2 rounded-full cursor-pointer"
+          >
+            +
+          </label>
+          <input
+            id="fileInput"
+            type="file"
+            onChange={handleFileChange}
+            className="hidden"
+          />
+        </div>
+        <div>
+          <h1 className="text-2xl font-bold">Profile</h1>
+          <p className="text-gray-600">Manage your account details</p>
+        </div>
+      </div>
 
       <button
         onClick={handleUpload}
@@ -149,7 +166,7 @@ const Profile = () => {
           Update Username
         </button>
         <button
-          onClick={logout}
+          onClick={handleLogout} // Use logout from AuthContext
           className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
         >
           Logout
