@@ -1,9 +1,12 @@
 import express from "express";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 import User from "../models/User.js";
+import cookieParser from "cookie-parser";
 import multer from "multer";
 import path from "path";
 import products from "../data/product.js";
+import { authenticateToken, authorizeRoles } from "../Middleware/Auth.js";
 
 const router = express.Router();
 
@@ -22,7 +25,7 @@ const upload = multer({ storage });
 
 router.post("/register", async (req, res) => {
   try {
-    const { username, email, password } = req.body;
+    const { username, email, password, role = "buyer" } = req.body;
 
     const existingUser = await User.findOne({ email });
 
@@ -31,7 +34,7 @@ router.post("/register", async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const newUser = new User({ username, email, password: hashedPassword });
+    const newUser = new User({ username, email, password: hashedPassword, role });
     await newUser.save();
 
     res.status(201).json({ message: "User registered Successfully" });
@@ -60,12 +63,26 @@ router.post("/login", async (req, res) => {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
+    //Generate JWT Token
+    const token = jwt.sign(
+       {email: user.email, username: user.username},
+       "your_jwt_secret_key",
+        {expiresIn: '1h'}
+      );
+
+    // Set the token as an HTTP-only cookies
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 3600000,
+    });
+
     console.log("Login successful");
-    res
-      .status(200)
-      .json({
+
+    res.status(200).json({
         message: "Login successful",
-        user: { email: user.email, username: user.username },
+        user: { email: user.email, username: user.username, role: user.role },
       });
   } catch (err) {
     console.error("Error during login:", err);
@@ -126,13 +143,13 @@ router.patch("/profile", async (req, res) => {
       },
     });
   } catch (err) {
-    console.error("Error updating username:", error);
+    console.error("Error updating username:", err.message);
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
 
 //GET profile details by email
-router.get("/profile", async (req, res) => {
+router.get("/profile", authenticateToken, async (req, res) => {
   try {
     const { email } = req.query;
 
@@ -140,7 +157,7 @@ router.get("/profile", async (req, res) => {
       return res.status(400).json({ message: "Email is required " });
     }
 
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email: req.user.email });
 
     if (!user) {
       return res.status(404).json({ message: "User not found " });
@@ -191,15 +208,45 @@ router.post("/upload-pic", upload.single("profilePic"), async (req, res) => {
   }
 });
 
-router.get("/:id", (req, res) => {
-  const productId = parseInt(req.params.id, 10);
-  const product = products.find((p) => p.id === productId);
+// router.get("/:id", (req, res) => {
+//   const productId = parseInt(req.params.id, 10);
+//   const product = products.find((p) => p.id === productId);
 
-  if (!product) {
-    return res.status(404).json({ message: "Product not found" });
-  }
+//   if (!product) {
+//     return res.status(404).json({ message: "Product not found" });
+//   }
 
-  res.json(product);
+//   res.json(product);
+// });
+
+router.post("/logout", (req, res) => {
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+  });
+  res.status(200).json({ message: "Logged out successfully "});
 });
+
+router.get("/admin/dashboard", authenticateToken, authorizeRoles("admin"), (req, res) => {
+  res.status(200).json({ message: "Welcome to the Admin Dashboard "});
+});
+
+router.get("/seller/dashboard", authenticateToken, authorizeRoles("seller"), (req, res) => {
+  res.status(200).json({ message: "Welcome to the Seller Dashboard"});
+});
+
+router.get("/buyer/dashboard", authenticateToken, authorizeRoles("buyer"), (req, res) => {
+  res.status(200).json({ message: "Welcome to the Buyer Dashboard" });
+});
+
+router.get("/", (req, res) => {
+  res.setHeader("Access-Control-Allow-Origin", "*")
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+  res.setHeader("Access-Control-Max-Age", "1800");
+  res.setHeader("Access-Control-Allow-Headers", "content-type");
+  res.setHeader( "Access-Control-Allow-Methods", "PUT, POST, GET, DELETE, PATCH, OPTIONS" ); 
+   });
+
 
 export default router;

@@ -12,9 +12,44 @@ console.log(cart);
 
 // const dispatch = useDispatch();
 
-const handlePayment = () => {
-    alert("Payment Successful");
-    navigate("/home");
+const handlePayment = async () => {
+  try {
+    const totalAmount = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
+
+    const order = {
+      id: "order_placeholderID",
+      amount: totalAmount * 100,
+      currency: "INR",
+    };
+
+    const options = {
+      key: "rzp_test_placeholderKeyID",
+      amount: order.amount,
+      currency: order.currency,
+      name: "24x7 Shop",
+      description: "Test Transaction",
+      order_id: order.id,
+      handler: function (response) {
+        alert("Payment Successful! (Simulated");
+        console.log(response);
+        navigate("/home");
+      },
+      prefill: {
+        name: "John Doe",
+        email: "john.doe@example.com",
+        contact: "9991221291",
+      },
+      theme: {
+        color: "#3399cc",
+      },
+    };
+
+    console.log("Razorpay options", { ...options, totalAmount });
+    const razorpay = new window.Razorpay(options);
+    razorpay.open();
+  } catch (err) {
+    console.error("Error initiating payment:", err.message);
+  }
 }
 
 const totalAmount = cart.reduce( (acc, item) => acc + item.price * item.quantity, 0);

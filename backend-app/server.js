@@ -4,18 +4,26 @@ import cors from "cors";
 import authRoutes from "./routes/authRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import path from "path";
+import cookieParser from "cookie-parser";
 
 const app = express();
 
 app.use("/uploads", express.static(path.join(path.resolve(), "uploads")));
 
-app.use(cors());
+const corsOptions = {
+  origin: ["http://localhost:5173", "https://capstone-e-commerce-project.vercel.app/"],
+  credentials: true,
+  methods: ["GET", "POST", "PATCH", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
+app.use(cookieParser());
 
 // Fix the typo in the route prefix
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
-
 
 mongoose.connect("mongodb+srv://vedant1204:vedant1204@cluster0.3ojt6wy.mongodb.net/e-commerce")
   .then(() => console.log("Connected to MongoDB"))
