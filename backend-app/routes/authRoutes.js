@@ -190,7 +190,7 @@ router.post("/upload-pic", upload.single("profilePic"), async (req, res) => {
 
     const user = await User.findOneAndUpdate(
       { email },
-      { profilePic: profilePicUrl },
+      { profilePic: `https://capstone-e-commerce-project.onrender.com${profilePicUrl}` }, // Updated URL
       { new: true }
     );
 

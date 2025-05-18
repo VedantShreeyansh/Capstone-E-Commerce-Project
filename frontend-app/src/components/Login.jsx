@@ -35,7 +35,7 @@ const Login = () => {
       alert(err.response?.data?.message || "Login failed");
     }
   };
-
+  
   return (
     <div className="p-8 max-w-md mx-auto bg-white shadow-lg rounded-lg mt-16">
       <h1 className="text-2xl font-bold mb-6 text-center">Login</h1>

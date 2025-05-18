@@ -51,7 +51,7 @@ router.post("/add", upload.single("image"), (req, res) => {
       title,
       price: parseFloat(price),
       category,
-      thumbnail: `http://localhost:5000${imageUrl}`,
+      thumbnail: `https://capstone-e-commerce-project.onrender.com${imageUrl}`,
     };
 
     products[0].products.push(newProduct);
