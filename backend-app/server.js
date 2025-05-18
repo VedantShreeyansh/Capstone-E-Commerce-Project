@@ -11,7 +11,7 @@ const app = express();
 app.use("/uploads", express.static(path.join(path.resolve(), "uploads")));
 
 const corsOptions = {
-  origin: ["http://localhost:5173", "https://capstone-e-commerce-project.vercel.app/"],
+  origin: ["http://localhost:5173", "https://capstone-e-commerce-project.vercel.app"],
   credentials: true,
   methods: ["GET", "POST", "PATCH", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"],
