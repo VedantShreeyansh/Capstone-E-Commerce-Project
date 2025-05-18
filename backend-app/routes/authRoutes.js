@@ -10,6 +10,11 @@ import { authenticateToken, authorizeRoles } from "../Middleware/Auth.js";
 
 const router = express.Router();
 
+router.get("/test", (req, res) => {
+  res.send("Auth route is working!");
+});
+
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, "uploads/"); // Directory to store uploaded files
@@ -149,28 +154,27 @@ router.patch("/profile", async (req, res) => {
 });
 
 //GET profile details by email
-router.get("/profile", authenticateToken, async (req, res) => {
-  try {
-    const { email } = req.query;
+router.patch("/profile", async (req, res) => {
+  const { email, username } = req.body;
 
+  try {
     if (!email) {
-      return res.status(400).json({ message: "Email is required " });
+      return res.status(400).json({ message: "Email is required" });
     }
 
-    const user = await User.findOne({ email: req.user.email });
+    const user = await User.findOne({ email });
 
     if (!user) {
-      return res.status(404).json({ message: "User not found " });
+      return res.status(404).json({ message: "User not found" });
     }
 
-    res.status(200).json({
-      email: user.email,
-      username: user.username,
-      profilePic: user.profilePic,
-    });
+    user.username = username;
+    await user.save();
+
+    res.status(200).json({ message: "Username updated successfully", username: user.username });
   } catch (err) {
-    console.error("Error fetching profile:", err.message);
-    res.status(200).json({ message: "Internal Server Error " });
+    console.error("Error updating username:", err);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 });
 
@@ -190,12 +194,12 @@ router.post("/upload-pic", upload.single("profilePic"), async (req, res) => {
 
     const user = await User.findOneAndUpdate(
       { email },
-      { profilePic: `https://capstone-e-commerce-project.onrender.com${profilePicUrl}` }, // Updated URL
+      { profilePic: `https://capstone-e-commerce-project.onrender.com${profilePicUrl}` },
       { new: true }
     );
 
     if (!user) {
-      return res.status(400).json({ message: "User not found" });
+      return res.status(404).json({ message: "User not found" });
     }
 
     res.status(200).json({

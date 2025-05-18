@@ -4,6 +4,11 @@ import products from "../data/product.js";
 
 const router = express.Router();
 
+router.get("/test", (req, res) => {
+  res.send("Product route is working!");
+});
+
+
 // Configure multer for image uploads
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {

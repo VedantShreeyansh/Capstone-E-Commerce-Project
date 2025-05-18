@@ -11,13 +11,15 @@ const app = express();
 app.use("/uploads", express.static(path.join(path.resolve(), "uploads")));
 
 const corsOptions = {
-  origin: ["http://localhost:5173", "http://localhost:5175"],
-  credentials: true,
-  methods: ["GET", "POST", "PATCH", "DELETE"],
-  allowedHeaders: ["Content-Type", "Authorization"],
+  origin: "https://capstone-e-commerce-project.vercel.app", // Include your frontend URL
+  credentials: true, // Allow cookies and credentials
+  methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"], // Include OPTIONS for preflight requests
+  allowedHeaders: ["Content-Type", "Authorization"], // Allow necessary headers
 };
 
 app.use(cors(corsOptions));
+// app.options("*", cors(corsOptions)); 
+
 app.use(express.json());
 app.use(cookieParser());
 
@@ -25,7 +27,10 @@ app.use(cookieParser());
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
 
-mongoose.connect("mongodb+srv://vedant1204:vedant1204@cluster0.3ojt6wy.mongodb.net/e-commerce")
+mongoose
+  .connect(
+    "mongodb+srv://vedant1204:vedant1204@cluster0.3ojt6wy.mongodb.net/e-commerce"
+  )
   .then(() => console.log("Connected to MongoDB"))
   .catch((err) => console.error("Failed to connect to MongoDB:", err));
 

@@ -36,11 +36,19 @@ const Profile = () => {
 
   // Update username
   const handleUpdate = async () => {
+    if (!profile.email) {
+      alert("Email is missing. Please log in again.");
+      return;
+    }
+  
     try {
-      const res = await axios.patch("https://capstone-e-commerce-project.onrender.com/api/auth/profile", {
-        email: profile.email,
-        username: newUsername,
-      });
+      const res = await axios.patch(
+        "https://capstone-e-commerce-project.onrender.com/api/auth/profile",
+        {
+          email: profile.email, // Ensure email is sent
+          username: newUsername,
+        }
+      );
       alert(res.data.message);
       setProfile((prev) => ({ ...prev, username: newUsername }));
     } catch (err) {
@@ -60,17 +68,26 @@ const Profile = () => {
       return;
     }
 
+  if (!profile.email) {
+    alert("Email is missing. Please log in again.");
+    return;
+  }
+
     const formData = new FormData();
     formData.append("profilePic", selectedFile);
     formData.append("email", profile.email);
 
     try {
-      const res = await axios.post("https://capstone-e-commerce-project.onrender.com/api/auth/upload-pic", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      const res = await axios.post(
+        "https://capstone-e-commerce-project.onrender.com/api/auth/upload-pic",
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
       alert(res.data.message);
       setProfile((prev) => ({ ...prev, profilePic: res.data.profilePic }));
-    } catch (err) {
+    }catch (err) {
       console.error("Error uploading profile picture:", err.response?.data?.message || err.message);
     }
   };
