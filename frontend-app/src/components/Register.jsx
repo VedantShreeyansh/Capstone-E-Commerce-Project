@@ -11,7 +11,7 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("http://localhost:5000/api/auth/register", form, {
+      const res = await axios.post("https://capstone-e-commerce-project.onrender.com/api/auth/register", form, {
         withCredentials: true,
       });
       alert(res.data.message || "User registered successfully");

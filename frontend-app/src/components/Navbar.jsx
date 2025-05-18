@@ -24,10 +24,10 @@ const NavBar = () => {
     const fetchProfilePic = async () => {
       if (user && user.email) {
       try {
-        const res = await axios.get("http://localhost:5000/api/auth/profile", {
+        const res = await axios.get("https://capstone-e-commerce-project.onrender.com/api/auth/profile", {
           params: { email: user.email },
         });
-        profilePicRef.current = `http://localhost:5000${res.data.profilePic}`;
+        profilePicRef.current = `https://capstone-e-commerce-project.onrender.com${res.data.profilePic}`;
       } catch (err) {
         console.error("Error fetching profile picture:", err);
       }

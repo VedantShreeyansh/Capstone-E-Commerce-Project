@@ -21,7 +21,7 @@ const Profile = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/auth/profile", {
+        const res = await axios.get("https://capstone-e-commerce-project.onrender.com/api/auth/profile", {
           params: { email: user.email },
         });
         setProfile(res.data);
@@ -37,7 +37,7 @@ const Profile = () => {
   // Update username
   const handleUpdate = async () => {
     try {
-      const res = await axios.patch("http://localhost:5000/api/auth/profile", {
+      const res = await axios.patch("https://capstone-e-commerce-project.onrender.com/api/auth/profile", {
         email: profile.email,
         username: newUsername,
       });
@@ -65,7 +65,7 @@ const Profile = () => {
     formData.append("email", profile.email);
 
     try {
-      const res = await axios.post("http://localhost:5000/api/auth/upload-pic", formData, {
+      const res = await axios.post("https://capstone-e-commerce-project.onrender.com/api/auth/upload-pic", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       alert(res.data.message);
@@ -78,7 +78,7 @@ const Profile = () => {
   // Logout function
   const handleLogout = async () => {
     try {
-      await axios.post("http://localhost:5000/api/auth/logout", {}, { withCredentials: true });
+      await axios.post("https://capstone-e-commerce-project.onrender.com/api/auth/logout", {}, { withCredentials: true });
       logout(); // Clear user data from context
       navigate("/login");
     } catch (err) {
@@ -92,7 +92,7 @@ const Profile = () => {
         <div className="relative">
           {profile.profilePic ? (
             <img
-              src={`http://localhost:5000${profile.profilePic}`} // Use the full URL
+              src={`https://capstone-e-commerce-project.onrender.com${profile.profilePic}`} // Use the full URL
               className="w-24 h-24 bg-gray-300 rounded-full object-cover"
               alt="Profile"
             />

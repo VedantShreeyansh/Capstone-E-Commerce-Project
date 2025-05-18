@@ -8,7 +8,7 @@ const AdminDashboard = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/products/list");
+        const res = await axios.get("https://capstone-e-commerce-project.onrender.com/api/products/list");
         setProducts(res.data);
       } catch (err) {
         console.error("Error fetching products:", err.message);
@@ -29,7 +29,7 @@ const AdminDashboard = () => {
         formData.append("image", newProduct.image);
       }
 
-      const res = await axios.post("http://localhost:5000/api/products/add", formData, {
+      const res = await axios.post("https://capstone-e-commerce-project.onrender.com/api/products/add", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
@@ -43,7 +43,7 @@ const AdminDashboard = () => {
 
   const handleDeleteProduct = async (id) => {
     try {
-      await axios.delete(`http://localhost:5000/api/products/delete/${id}`);
+      await axios.delete(`https://capstone-e-commerce-project.onrender.com/api/products/delete/${id}`);
       setProducts((prev) => prev.filter((product) => product.id !== id));
       alert("Product deleted successfully");
     } catch (err) {

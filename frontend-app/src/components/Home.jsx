@@ -15,7 +15,7 @@ const Home = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/products/list");
+        const res = await axios.get("https://capstone-e-commerce-project.onrender.com/api/products/list");
         setProducts(res.data);
       } catch (err) {
         console.error("Error fetching products:", err.message);

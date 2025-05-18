@@ -8,7 +8,7 @@ const ProductDetails = () => {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/products/${productId}`);
+        const res = await fetch(`https://capstone-e-commerce-project.onrender.com/api/products/${productId}`);
         if (!res.ok) {
           throw new Error("Failed to fetch product");
         }
