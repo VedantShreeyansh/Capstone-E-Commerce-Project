@@ -29,4 +29,8 @@ mongoose.connect("mongodb+srv://vedant1204:vedant1204@cluster0.3ojt6wy.mongodb.n
   .then(() => console.log("Connected to MongoDB"))
   .catch((err) => console.error("Failed to connect to MongoDB:", err));
 
+  app.get("/", (req, res) => {
+    res.send("Backend is running. Use the API routes to interact with the server.");
+  });
+
 app.listen(5000, () => console.log("Server is running on port 5000"));
