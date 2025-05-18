@@ -11,7 +11,7 @@ const app = express();
 app.use("/uploads", express.static(path.join(path.resolve(), "uploads")));
 
 const corsOptions = {
-  origin: ["http://localhost:5173", "https://capstone-e-commerce-project.vercel.app"],
+  origin: ["https://capstone-e-commerce-project.vercel.app"],
   credentials: true,
   methods: ["GET", "POST", "PATCH", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"],
@@ -19,7 +19,9 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 app.use(express.json());
-app.use(cookieParser());
+app.use(cookieParser()); 
+
+app.options("*", cors(corsOptions));
 
 // Fix the typo in the route prefix
 app.use("/api/auth", authRoutes);
