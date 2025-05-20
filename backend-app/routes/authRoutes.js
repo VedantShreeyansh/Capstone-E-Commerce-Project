@@ -128,8 +128,35 @@ router.post("/login", async (req, res) => {
 
 router.get("/profile", authenticateToken, async (req, res) => {
   try {
-    const { email, username} = req.body;
+    const email = req.user?.email; // ✅ fetched by authenticateToken middleware
 
+    if (!email) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json({
+      email: user.email,
+      username: user.username,
+      profilePic: user.profilePic || null,
+    });
+  } catch (err) {
+    console.error("Error fetching profile:", err);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+
+
+//GET profile details by email
+router.patch("/profile", async (req, res) => {
+  const { email, username } = req.body;
+
+  try {
     if (!email) {
       return res.status(400).json({ message: "Email is required" });
     }
@@ -143,36 +170,12 @@ router.get("/profile", authenticateToken, async (req, res) => {
     user.username = username;
     await user.save();
 
-    res.status(200).json({ message: "Username updated successfully", username: user.username});
+    res.status(200).json({ message: "Username updated successfully", username: user.username });
   } catch (err) {
+    console.error("Error updating username:", err);
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
-
-//GET profile details by email
-// router.patch("/profile", async (req, res) => {
-//   const { email, username } = req.body;
-
-//   try {
-//     if (!email) {
-//       return res.status(400).json({ message: "Email is required" });
-//     }
-
-//     const user = await User.findOne({ email });
-
-//     if (!user) {
-//       return res.status(404).json({ message: "User not found" });
-//     }
-
-//     user.username = username;
-//     await user.save();
-
-//     res.status(200).json({ message: "Username updated successfully", username: user.username });
-//   } catch (err) {
-//     console.error("Error updating username:", err);
-//     res.status(500).json({ message: "Internal Server Error" });
-//   }
-// });
 
 router.post("/upload-pic", upload.single("profilePic"), async (req, res) => {
   try {
@@ -190,7 +193,7 @@ router.post("/upload-pic", upload.single("profilePic"), async (req, res) => {
 
     const user = await User.findOneAndUpdate(
       { email },
-      { profilePic: `https://capstone-e-commerce-project.onrender.com${profilePicUrl}` },
+      { profilePic: profilePicUrl },
       { new: true }
     );
 

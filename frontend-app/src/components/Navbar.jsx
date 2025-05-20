@@ -9,7 +9,7 @@ const NavBar = () => {
   const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
   const searchQueryRef = useRef("");
   const profilePicRef = useRef("");
-  const { user, isLoggedIn } = useAuth();
+  const { user, isLoggedIn, profilePic } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [currentPath, setCurrentPath] = useState(location.pathname);

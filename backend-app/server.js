@@ -8,10 +8,12 @@ import cookieParser from "cookie-parser";
 
 const app = express();
 
+// Serve static files from the "uploads" directory
 app.use("/uploads", express.static(path.join(path.resolve(), "uploads")));
 
 const allowedOrigins = [
-  "https://capstone-e-commerce-project.vercel.app", "http://localhost:5173",  // Production frontend // Development frontend
+  "https://capstone-e-commerce-project.vercel.app", // Production frontend
+  "http://localhost:5173", // Development frontend
 ];
 
 const corsOptions = {
@@ -28,21 +30,18 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-// app.options("*", cors(corsOptions));
-// app.options("*", cors(corsOptions)); 
-
 app.use(express.json());
 app.use(cookieParser());
 
-// Fix the typo in the route prefix
+// Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
 
+// Connect to MongoDB
 mongoose
-  .connect(
-    "mongodb+srv://vedant1204:vedant1204@cluster0.3ojt6wy.mongodb.net/e-commerce"
-  )
+  .connect("mongodb+srv://vedant1204:vedant1204@cluster0.3ojt6wy.mongodb.net/e-commerce")
   .then(() => console.log("Connected to MongoDB"))
   .catch((err) => console.error("Failed to connect to MongoDB:", err));
 
+// Start the server
 app.listen(5000, () => console.log("Server is running on port 5000"));

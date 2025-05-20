@@ -4,50 +4,50 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const Profile = () => {
-  const { user, logout } = useAuth(); 
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [profile, setProfile] = useState({ email: "", username: "", profilePic: "" });
   const [newUsername, setNewUsername] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
 
-  // Redirect to login if user is not authenticated
+  const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
+
+  // Redirect if not authenticated
   useEffect(() => {
     if (!user) {
       navigate("/login");
     }
   }, [user, navigate]);
 
-  // Fetch profile details
+  // Fetch profile details from backend
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const res = await axios.get("https://capstone-e-commerce-project.onrender.com/api/auth/profile", {
-          params: { email: user.email },
+        const res = await axios.get(`${backendUrl}/api/auth/profile`, {
+          params: { email: user?.email },
+          withCredentials: true,
         });
         setProfile(res.data);
         setNewUsername(res.data.username);
       } catch (err) {
         console.error("Error fetching profile:", err.response?.data?.message || err.message);
+        if (err.response?.status === 401) {
+          logout();
+          navigate("/login");
+        }
       }
     };
 
     if (user?.email) fetchProfile();
   }, [user]);
 
-  // Update username
   const handleUpdate = async () => {
-    if (!profile.email) {
-      alert("Email is missing. Please log in again.");
-      return;
-    }
-  
+    if (!profile.email) return alert("Email missing. Please log in again.");
     try {
       const res = await axios.patch(
-        `${import.meta.env.VITE_BACKEND_URL || "http://localhost:5000"}/api/auth/profile`,
-        {
-          email: profile.email, // Ensure email is sent
-          username: newUsername,
-        }
+        `${backendUrl}/api/auth/profile`,
+        { email: profile.email, username: newUsername },
+        { withCredentials: true }
       );
       alert(res.data.message);
       setProfile((prev) => ({ ...prev, username: newUsername }));
@@ -56,50 +56,40 @@ const Profile = () => {
     }
   };
 
-  // Handle file selection
-  const handleFileChange = (e) => {
-    setSelectedFile(e.target.files[0]);
-  };
+  const handleFileChange = (e) => setSelectedFile(e.target.files[0]);
 
-  // Upload profile picture
   const handleUpload = async () => {
-    if (!selectedFile) {
-      alert("Please select a file to upload.");
-      return;
-    }
-
-  if (!profile.email) {
-    alert("Email is missing. Please log in again.");
-    return;
-  }
+    if (!selectedFile) return alert("Please select a file.");
+    if (!profile.email) return alert("Email missing. Please log in again.");
 
     const formData = new FormData();
     formData.append("profilePic", selectedFile);
     formData.append("email", profile.email);
 
     try {
-      const res = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URL || "http://localhost:5000"}/api/auth/upload-pic`,
-        formData,
-        {
-          headers: { "Content-Type": "multipart/form-data" },
-        }
-      );
+      const res = await axios.post(`${backendUrl}/api/auth/upload-pic`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+        withCredentials: true,
+      });
       alert(res.data.message);
-      setProfile((prev) => ({ ...prev, profilePic: res.data.profilePic }));
+
+      const updatedProfile = await axios.get(`${backendUrl}/api/auth/profile`, {
+        params: { email: profile.email },
+        withCredentials: true,
+      });
+      setProfile(updatedProfile.data);
     } catch (err) {
-      console.error("Error uploading profile picture:", err.response?.data?.message || err.message);
+      console.error("Upload error:", err.response?.data?.message || err.message);
     }
   };
 
-  // Logout function
   const handleLogout = async () => {
     try {
-      await axios.post("https://capstone-e-commerce-project.onrender.com/api/auth/logout", {}, { withCredentials: true });
-      logout(); // Clear user data from context
+      await axios.post(`${backendUrl}/api/auth/logout`, {}, { withCredentials: true });
+      logout(); // Clear user from context + localStorage
       navigate("/login");
     } catch (err) {
-      console.error("Error during logout:", err.response?.data?.message || err.message);
+      console.error("Logout failed:", err.response?.data?.message || err.message);
     }
   };
 
@@ -107,30 +97,19 @@ const Profile = () => {
     <div className="p-8 max-w-md mx-auto bg-white shadow-lg rounded-lg">
       <div className="flex items-center space-x-4 mb-6">
         <div className="relative">
-          {profile.profilePic ? (
-            <img
-              src={`https://capstone-e-commerce-project.onrender.com${profile.profilePic}`} // Use the full URL
-              className="w-24 h-24 bg-gray-300 rounded-full object-cover"
-              alt="Profile"
-            />
-          ) : (
-            <img
-              src="https://via.placeholder.com/150"
-              className="w-24 h-24 bg-gray-300 rounded-full object-cover"
-            />
-          )}
-          <label
-            htmlFor="fileInput"
-            className="absolute bottom-0 right-0 bg-blue-500 text-white p-2 rounded-full cursor-pointer"
-          >
+          <img
+            src={
+              profile.profilePic
+                ? `${backendUrl}${profile.profilePic}`
+                : "https://via.placeholder.com/150"
+            }
+            className="w-24 h-24 bg-gray-300 rounded-full object-cover"
+            alt="Profile"
+          />
+          <label htmlFor="fileInput" className="absolute bottom-0 right-0 bg-blue-500 text-white p-2 rounded-full cursor-pointer">
             +
           </label>
-          <input
-            id="fileInput"
-            type="file"
-            onChange={handleFileChange}
-            className="hidden"
-          />
+          <input id="fileInput" type="file" onChange={handleFileChange} className="hidden" />
         </div>
         <div>
           <h1 className="text-2xl font-bold">Profile</h1>
@@ -156,16 +135,6 @@ const Profile = () => {
       </div>
 
       <div className="mb-4">
-        <label className="block text-gray-700 font-bold mb-2">Password:</label>
-        <input
-          type="password"
-          value="******"
-          disabled
-          className="w-full p-2 border bg-gray-100 cursor-not-allowed rounded"
-        />
-      </div>
-
-      <div className="mb-4">
         <label className="block text-gray-700 font-bold mb-2">Username:</label>
         <input
           type="text"
@@ -183,7 +152,7 @@ const Profile = () => {
           Update Username
         </button>
         <button
-          onClick={handleLogout} // Use logout from AuthContext
+          onClick={handleLogout}
           className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
         >
           Logout
