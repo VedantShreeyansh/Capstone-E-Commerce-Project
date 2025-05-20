@@ -33,18 +33,18 @@ router.post("/register", async (req, res) => {
     const { username, email, password, role = "buyer" } = req.body;
 
     const existingUser = await User.findOne({ email });
-
-    if (existingUser)
-      return res.status(400).json({ message: "Email already exist" });
+    if (existingUser) {
+      return res.status(400).json({ message: "Email already exists" });
+    }
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const newUser = new User({ username, email, password: hashedPassword, role });
     await newUser.save();
 
-    res.status(201).json({ message: "User registered Successfully" });
+    res.status(201).json({ message: "User registered successfully" });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Internal Server Error" });
   }
 });
 
@@ -84,14 +84,13 @@ router.post("/login", async (req, res) => {
     });
 
     console.log("Login successful");
-
     res.status(200).json({
         message: "Login successful",
         user: { email: user.email, username: user.username, role: user.role },
       });
   } catch (err) {
     console.error("Error during login:", err);
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Internal Server Error" });
   }
 });
 
@@ -127,37 +126,10 @@ router.post("/login", async (req, res) => {
 //   }
 // });
 
-router.patch("/profile", async (req, res) => {
-  const { username, email } = req.body;
-
+router.get("/profile", authenticateToken, async (req, res) => {
   try {
-    const updatedUser = await User.findOneAndUpdate(
-      { email },
-      { username },
-      { new: true }
-    );
-    if (!updatedUser) {
-      return res.status(404).json({ message: "User not found" });
-    }
+    const { email, username} = req.body;
 
-    res.json({
-      message: "Username updated successfully",
-      user: {
-        email: updatedUser.email,
-        username: updatedUser.username,
-      },
-    });
-  } catch (err) {
-    console.error("Error updating username:", err.message);
-    res.status(500).json({ message: "Internal Server Error" });
-  }
-});
-
-//GET profile details by email
-router.patch("/profile", async (req, res) => {
-  const { email, username } = req.body;
-
-  try {
     if (!email) {
       return res.status(400).json({ message: "Email is required" });
     }
@@ -171,12 +143,36 @@ router.patch("/profile", async (req, res) => {
     user.username = username;
     await user.save();
 
-    res.status(200).json({ message: "Username updated successfully", username: user.username });
+    res.status(200).json({ message: "Username updated successfully", username: user.username});
   } catch (err) {
-    console.error("Error updating username:", err);
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
+
+//GET profile details by email
+// router.patch("/profile", async (req, res) => {
+//   const { email, username } = req.body;
+
+//   try {
+//     if (!email) {
+//       return res.status(400).json({ message: "Email is required" });
+//     }
+
+//     const user = await User.findOne({ email });
+
+//     if (!user) {
+//       return res.status(404).json({ message: "User not found" });
+//     }
+
+//     user.username = username;
+//     await user.save();
+
+//     res.status(200).json({ message: "Username updated successfully", username: user.username });
+//   } catch (err) {
+//     console.error("Error updating username:", err);
+//     res.status(500).json({ message: "Internal Server Error" });
+//   }
+// });
 
 router.post("/upload-pic", upload.single("profilePic"), async (req, res) => {
   try {

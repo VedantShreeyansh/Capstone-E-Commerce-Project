@@ -22,7 +22,8 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("https://capstone-e-commerce-project.onrender.com/api/auth/login", form, {
+      const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000"; // Use environment variable or fallback to localhost
+      const res = await axios.post(`${backendUrl}/api/auth/login`, form, {
         withCredentials: true,
       });
       if (res.data.user) {

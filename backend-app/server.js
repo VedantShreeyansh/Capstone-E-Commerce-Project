@@ -10,14 +10,25 @@ const app = express();
 
 app.use("/uploads", express.static(path.join(path.resolve(), "uploads")));
 
+const allowedOrigins = [
+  "https://capstone-e-commerce-project.vercel.app", "http://localhost:5173",  // Production frontend // Development frontend
+];
+
 const corsOptions = {
-  origin: "https://capstone-e-commerce-project.vercel.app", // Include your frontend URL
+  origin: (origin, callback) => {
+    if (allowedOrigins.includes(origin) || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
   credentials: true, // Allow cookies and credentials
   methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"], // Include OPTIONS for preflight requests
   allowedHeaders: ["Content-Type", "Authorization"], // Allow necessary headers
 };
 
 app.use(cors(corsOptions));
+// app.options("*", cors(corsOptions));
 // app.options("*", cors(corsOptions)); 
 
 app.use(express.json());

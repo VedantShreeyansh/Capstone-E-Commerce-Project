@@ -43,7 +43,7 @@ const Profile = () => {
   
     try {
       const res = await axios.patch(
-        "https://capstone-e-commerce-project.onrender.com/api/auth/profile",
+        `${import.meta.env.VITE_BACKEND_URL || "http://localhost:5000"}/api/auth/profile`,
         {
           email: profile.email, // Ensure email is sent
           username: newUsername,
@@ -79,7 +79,7 @@ const Profile = () => {
 
     try {
       const res = await axios.post(
-        "https://capstone-e-commerce-project.onrender.com/api/auth/upload-pic",
+        `${import.meta.env.VITE_BACKEND_URL || "http://localhost:5000"}/api/auth/upload-pic`,
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },
@@ -87,7 +87,7 @@ const Profile = () => {
       );
       alert(res.data.message);
       setProfile((prev) => ({ ...prev, profilePic: res.data.profilePic }));
-    }catch (err) {
+    } catch (err) {
       console.error("Error uploading profile picture:", err.response?.data?.message || err.message);
     }
   };
