@@ -20,28 +20,25 @@ const NavBar = () => {
     setCurrentPath(location.pathname);
   }, [location]);
 
-  useEffect(() => {
-    const fetchProfilePic = async () => {
-      if (user && user.email) {
-      try {
-        const res = await axios.get("https://capstone-e-commerce-project.onrender.com/api/auth/profile", {
-          params: { email: user.email },
-        });
-        profilePicRef.current = res.data.profilePic;
-      } catch (err) {
-        console.error("Error fetching profile picture:", err);
-      }
-     }
-    };
-    fetchProfilePic();
-  }, [user]);
-
+  // useEffect(() => {
+  //   const fetchProfilePic = async () => {
+  //     if (user && user.email) {
+  //     try {
+  //       const res = await axios.get("https://capstone-e-commerce-project.onrender.com/api/auth/profile", {
+  //         params: { email: user.email },
+  //       });
+  //       profilePicRef.current = res.data.profilePic;
+  //     } catch (err) {
+  //       console.error("Error fetching profile picture:", err);
+  //     }
+  //    }
+  //   };
+  //   fetchProfilePic();
+  // }, [user]);
 
   const handleSearchChange = (e) => {
-    searchQueryRef.current = e.target.value;
-    navigate(`/home?search=${searchQueryRef.current}`);
+    navigate(`/home?search=${e.target.value}`);
   }
-
 
   return (
     <nav className="bg-gray-900 p-4 text-white flex justify-between items-center shadow-lg">
@@ -70,15 +67,6 @@ const NavBar = () => {
               )}
             </Link>
           </li>
-          {/* <ul className="flex justify-between">
-          <li>
-            <Link to="/login" className="me-10 pl-2 space-x-5 hover:text-yellow-400">Login</Link>
-          </li>
-          <li>
-            <Link to="/register" className="me-10 space-x-2 hover:text-yellow-400">Register</Link>
-          </li>
-          </ul> */}
-          {/* Role-Based Links */ }
           {user?.role === "admin" && (
             <li>
                <Link to="/admin/dashboard" className="hover:text-yellow-400">
@@ -102,19 +90,19 @@ const NavBar = () => {
           )}
         </ul>
         {/* Profile Icon */}
-        {profilePicRef.current ? (
-          <img
-            src={profilePicRef.current}
-            className="w-10 h-10 rounded-full object-cover cursor-pointer"
-            onClick={() => navigate("/profile")}
-          />
-        ) : (
-          <img
-            src="https://via.placeholder.com/150"
-            className="w-10 h-10 rounded-full object-cover  cursor-pointer"
-            onClick={() => navigate("/profile")}
-          />
-        )} 
+        {profilePic ? (
+              <img
+                src={profilePic}
+                className="w-10 h-10 rounded-full object-cover cursor-pointer"
+                onClick={() => navigate("/profile")}
+              />
+            ) : (
+              <img
+                src="https://via.placeholder.com/150"
+                className="w-10 h-10 rounded-full object-cover cursor-pointer"
+                onClick={() => navigate("/profile")}
+              />
+            )}
          </>
         )}
         {!isLoggedIn && (

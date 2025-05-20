@@ -8,6 +8,7 @@ const Profile = () => {
   const navigate = useNavigate();
   const [profile, setProfile] = useState({ email: "", username: "", profilePic: "" });
   const [newUsername, setNewUsername] = useState("");
+  const [profilePic, setProfilePic] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
 
   const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
@@ -72,6 +73,8 @@ const Profile = () => {
         withCredentials: true,
       });
       alert(res.data.message);
+
+      setProfilePic(`${backendUrl}${res.data.profilePic}`);
 
       const updatedProfile = await axios.get(`${backendUrl}/api/auth/profile`, {
         params: { email: profile.email },

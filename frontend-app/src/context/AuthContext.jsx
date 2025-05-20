@@ -1,6 +1,9 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
+import axios from "axios";
 
 const AuthContext = createContext();
+
+export const useAuth = () => useContext(AuthContext);
 
 // Removed duplicate useAuth definition
 
@@ -13,6 +16,8 @@ export const AuthProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(
     localStorage.getItem("isAuthenticated") === "true"
   );
+
+  const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
 
   const login = (userData) => {
     setIsLoggedIn(true);
@@ -29,16 +34,48 @@ export const AuthProvider = ({ children }) => {
     localStorage.clear();
   };
 
+  const fetchProfilePic = async () => {
+    if (user?.email) {
+      try {
+        const res = await axios.get(`${backendUrl}/api/auth/profile`, {
+          params: { email: user.email },
+          withCredentials: true,
+        });
+        setProfilePic(`${backendUrl}${res.data.profilePic}`);
+      } catch (err) {
+        console.error("Error fetching profile picture: ", err.response?.data?.message || err.message);
+      }
+    }
+  };
+
+  const updateProfilePic = (newProfilePic) => {
+    setProfilePic(newProfilePic);
+    const updatedUser = { ...user, profilePic: newProfilePic};
+    setUser(updatedUser);
+    localStorage.setItem("user", JSON.stringify(updatedUser));
+  };
+
+
+
+  // const fetchCart = async () => {
+  //   const res = await axios.get(`${backendUrl}/api/auth/cart`, { withCredentials: true });
+  //   dispatchEvent(setCart(res.data));
+  // };
+
   useEffect(() =>{
     const isAuthenticated = localStorage.getItem("isAuthenticated")=== "true";
     setIsLoggedIn(isAuthenticated);
   }, []);
 
+  useEffect(() => {
+    if (user) {
+      fetchProfilePic();
+    }
+  }, [user]);
+
   return (
-    <AuthContext.Provider value={{ isLoggedIn, user, login, logout }}>
+    <AuthContext.Provider value={{ user, profilePic, isLoggedIn, login, logout, setProfilePic: updateProfilePic }}>
       {children}
     </AuthContext.Provider>
   );
 };
-
-export const useAuth = () => useContext(AuthContext);

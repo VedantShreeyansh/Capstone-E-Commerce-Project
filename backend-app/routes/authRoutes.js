@@ -152,7 +152,7 @@ router.get("/profile", authenticateToken, async (req, res) => {
 
 
 
-//GET profile details by email
+// GET profile details by email
 router.patch("/profile", async (req, res) => {
   const { email, username } = req.body;
 
