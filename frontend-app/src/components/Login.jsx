@@ -12,7 +12,7 @@ const Login = () => {
   const navigate = useNavigate();
 
    useEffect(() => {
-      localStorage.clear();
+      
   }, [])
 
   const handleChange = (e) => {

@@ -1,5 +1,7 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
 import axios from "axios";
+import { useDispatch } from "react-redux";
+import { clearCart } from "../redux/CartSlice";
 
 const AuthContext = createContext();
 
@@ -8,6 +10,8 @@ export const useAuth = () => useContext(AuthContext);
 // Removed duplicate useAuth definition
 
 export const AuthProvider = ({ children }) => {
+  const dispatch = useDispatch();
+
   const [user, setUser] = useState(() => {
     const storedUser = localStorage.getItem("user");
     return storedUser ? JSON.parse(storedUser) : null;
@@ -25,13 +29,20 @@ export const AuthProvider = ({ children }) => {
     setProfilePic(userData.profilePic || null);
     localStorage.setItem("isAuthenticated", "true");
     localStorage.setItem("user", JSON.stringify(userData));
+
+    const savedCart = localStorage.getItem("cart");
+    if (savedCart) {
+      dispatch({ type: "cart/setCart", payload: JSON.parse(savedCart) })
+    }
   };
 
   const logout = () => {
     setIsLoggedIn(false);
     setUser(null);
     setProfilePic(null);
+
     localStorage.clear();
+    dispatch(clearCart());
   };
 
   const fetchProfilePic = async () => {
