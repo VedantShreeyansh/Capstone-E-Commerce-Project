@@ -13,7 +13,7 @@ const Profile = () => {
   const [selectedFile, setSelectedFile] = useState(null);
 
   const backendUrl = import.meta.env.VITE_BACKEND_URL || "https://capstone-e-commerce-project.onrender.com";
-
+  
   // Redirect if not authenticated
   useEffect(() => {
     if (!user) {

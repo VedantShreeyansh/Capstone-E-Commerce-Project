@@ -20,21 +20,21 @@ const NavBar = () => {
     setCurrentPath(location.pathname);
   }, [location]);
 
-  // useEffect(() => {
-  //   const fetchProfilePic = async () => {
-  //     if (user && user.email) {
-  //     try {
-  //       const res = await axios.get("https://capstone-e-commerce-project.onrender.com/api/auth/profile", {
-  //         params: { email: user.email },
-  //       });
-  //       profilePicRef.current = res.data.profilePic;
-  //     } catch (err) {
-  //       console.error("Error fetching profile picture:", err);
-  //     }
-  //    }
-  //   };
-  //   fetchProfilePic();
-  // }, [user]);
+  useEffect(() => {
+    const fetchProfilePic = async () => {
+      if (user && user.email) {
+      try {
+        const res = await axios.get("https://capstone-e-commerce-project.onrender.com/api/auth/profile", {
+          params: { email: user.email },
+        });
+        profilePicRef.current = res.data.profilePic;
+      } catch (err) {
+        console.error("Error fetching profile picture:", err);
+      }
+     }
+    };
+    fetchProfilePic();
+  }, [user]);
 
   const handleSearchChange = (e) => {
     navigate(`/home?search=${e.target.value}`);
