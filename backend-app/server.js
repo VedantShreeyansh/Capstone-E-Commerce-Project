@@ -9,11 +9,11 @@ import cookieParser from "cookie-parser";
 const app = express();
 
 // Serve static files from the "uploads" directory
-app.use("/uploads", express.static(path.join(path.resolve(), "uploads")));
+
 
 const allowedOrigins = [
   "https://capstone-e-commerce-project.vercel.app", // Production frontend
-  "http://localhost:5173", // Development frontend
+  // "http://localhost:5173", // Development frontend
 ];
 
 const corsOptions = {
@@ -25,7 +25,7 @@ const corsOptions = {
     }
   },
   credentials: true, // Allow cookies and credentials
-  methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"], // Include OPTIONS for preflight requests
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"], // Include OPTIONS for preflight requests
   allowedHeaders: ["Content-Type", "Authorization"], // Allow necessary headers
 };
 
@@ -36,6 +36,7 @@ app.use(cookieParser());
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
+app.use("/uploads", express.static(path.join(path.resolve(), "uploads")));
 
 app.get("/", (req, res) => {
   res.send("Backend ir running");

@@ -153,7 +153,7 @@ router.get("/profile", authenticateToken, async (req, res) => {
 
 
 // GET profile details by email
-router.patch("/profile", async (req, res) => {
+router.patch("/profile", authenticateToken, async (req, res) => {
   const { email, username } = req.body;
 
   try {
@@ -189,7 +189,7 @@ router.post("/upload-pic", upload.single("profilePic"), async (req, res) => {
       return res.status(400).json({ message: "File is required" });
     }
 
-    const profilePicUrl = `/uploads/${req.file.filename}`;
+    const profilePicUrl = `http://localhost:5000/uploads/${req.file.filename}`;
 
     const user = await User.findOneAndUpdate(
       { email },
