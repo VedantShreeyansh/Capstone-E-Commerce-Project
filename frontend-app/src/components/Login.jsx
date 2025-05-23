@@ -11,9 +11,6 @@ const Login = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-   useEffect(() => {
-      
-  }, [])
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
