@@ -12,7 +12,7 @@ const Profile = () => {
   const [profilePic, setProfilePic] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
 
-  const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
+  const backendUrl = import.meta.env.VITE_BACKEND_URL || "https://capstone-e-commerce-project.onrender.com";
 
   // Redirect if not authenticated
   useEffect(() => {
@@ -25,10 +25,12 @@ const Profile = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
+        console.log("Fetching profile from:", `${backendUrl}/api/auth/profile`);
         const res = await axios.get(`${backendUrl}/api/auth/profile`, {
           params: { email: user?.email },
           withCredentials: true,
         });
+        console.log("Profile response:", res.data);
         setProfile(res.data);
         setNewUsername(res.data.username);
       } catch (err) {

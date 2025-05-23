@@ -37,6 +37,10 @@ app.use(cookieParser());
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
 
+app.get("/", (req, res) => {
+  res.send("Backend ir running");
+})
+
 // Connect to MongoDB
 mongoose
   .connect("mongodb+srv://vedant1204:vedant1204@cluster0.3ojt6wy.mongodb.net/e-commerce")
