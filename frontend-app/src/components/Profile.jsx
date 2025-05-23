@@ -5,7 +5,7 @@ import axios from "axios";
 import store from "../redux/Store";
 
 const Profile = () => {
-  const { user, logout, setProfilePic: updateProfilePic } = useAuth();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [profile, setProfile] = useState({ email: "", username: "", profilePic: "" });
   const [newUsername, setNewUsername] = useState("");
@@ -23,13 +23,11 @@ const Profile = () => {
 
   // Fetch profile details from backend
   useEffect(() => {
-    if (!user || !user.email ) return;
-
     const fetchProfile = async () => {
       try {
         console.log("Fetching profile from:", `${backendUrl}/api/auth/profile`);
         const res = await axios.get(`${backendUrl}/api/auth/profile`, {
-          params: { email: user.email },
+          params: { email: user?.email },
           withCredentials: true,
         });
         console.log("Profile response:", res.data);
@@ -79,12 +77,10 @@ const Profile = () => {
       });
       alert(res.data.message);
 
-      const newProfilePic = `${backendUrl}${res.data.profilePic}`;
-      setProfilePic(newProfilePic);
-      updateProfilePic(newProfilePic);
+      setProfilePic(`${backendUrl}${res.data.profilePic}`);
 
       const updatedProfile = await axios.get(`${backendUrl}/api/auth/profile`, {
-        params: {email: profile.email},
+        params: { email: profile.email },
         withCredentials: true,
       });
       setProfile(updatedProfile.data);

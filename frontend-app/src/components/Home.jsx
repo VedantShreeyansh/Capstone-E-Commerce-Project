@@ -7,6 +7,8 @@ const Home = () => {
   const [products, setProducts] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [sortOption, setSortOption] = useState("default");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const location = useLocation();
 
   const searchParams = new URLSearchParams(location.search);
@@ -15,10 +17,16 @@ const Home = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await axios.get("https://capstone-e-commerce-project.onrender.com/api/products/list");
+        setLoading(true);
+        setError(null);
+        const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
+        const res = await axios.get(`${backendUrl}/api/products/list`);
         setProducts(res.data);
       } catch (err) {
         console.error("Error fetching products:", err.message);
+        setError("Failed to load products. Please try again later.");
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -84,7 +92,15 @@ const Home = () => {
         </select>
       </div>
 
-      {sortedProducts.length > 0 ? (
+      {loading ? (
+        <div className="text-center text-gray-600 mt-8">
+          <h2 className="text-2xl font-bold">Loading products...</h2>
+        </div>
+      ) : error ? (
+        <div className="text-center text-red-600 mt-8">
+          <h2 className="text-2xl font-bold">{error}</h2>
+        </div>
+      ) : sortedProducts.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 px-4">
           {sortedProducts.map((product, index) => (
             <Card key={index} productObj={product} />
@@ -92,7 +108,7 @@ const Home = () => {
         </div>
       ) : (
         <div className="text-center text-gray-600 mt-8">
-          <h2 className="text-2xl font-bold">Product not found</h2>
+          <h2 className="text-2xl font-bold">No products found</h2>
           <p className="text-lg">Try searching for something else</p>
         </div>
       )}
